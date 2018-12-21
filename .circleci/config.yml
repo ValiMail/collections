@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11.2
+    working_directory: /go/src/github.com/Valimail/collections
+    steps:
+      - checkout
+      - run:
+          name: Setting up Go workspace
+          command: make prepare_ci
+      - run:
+          name: Running lint
+          command: make lint -j 8
+      - run:
+          name: Running tests
+          command: GOOS=linux GOARCH=amd64 make build
+      - run:
+          name: Report Coverage
+          command: bash <(curl -s https://codecov.io/bash)

@@ -2,7 +2,7 @@
 # `help` task as needed!
 
 APP_NAME=collections
-VERSION=1.0.0
+VERSION=1.0.1
 # REV=$(shell git rev-parse --short HEAD)
 # BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%S%z)
 GOOS?=darwin

@@ -3,7 +3,7 @@ jobs:
   build:
     docker:
       - image: circleci/golang:1.11.2
-    working_directory: /go/src/github.com/Valimail/collections
+    working_directory: /go/src/github.com/ValiMail/collections
     steps:
       - checkout
       - run:

@@ -4,6 +4,19 @@
 
 ### General
 
+## Workstation Setup
+
+See [our Go documentation](https://valimail.atlassian.net/wiki/spaces/ENG/pages/375586827/Go) for general setup considerations.
+
+In particular, be sure to add the following to your `~/.profile`, or other shell rc script to ensure that you don't
+encounter problems running `go get` to fetch private dependencies:
+
+```bash
+export GOPRIVATE="github.com/ValiMail/*"
+```
+
+Then, continue with the following steps:
+
 _All commands in setup instructions are relative to the root of this repo!_
 
 ```bash
@@ -12,7 +25,7 @@ brew install gimme cloc docker circleci
 
 # Activate the Go version for this project -- do this in ALL TERMINAL WINDOWS
 # in which you want to work on this project!
-eval "$(gimme 1.11.2)"
+eval "$(gimme 1.13.3)"
 
 # Install tools that are needed for both development and CI:
 make prepare_workstation
@@ -51,7 +64,7 @@ You _should_ set up an appropriate EditorConfig plugin for your editor, as well!
 ```bash
 # Activate the Go version for this project -- do this in ALL TERMINAL WINDOWS
 # in which you want to work on this project!
-eval "$(gimme 1.11.2)"
+eval "$(gimme 1.13.3)"
 
 # See what targets are available:
 make

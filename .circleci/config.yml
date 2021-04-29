@@ -1,9 +1,41 @@
-version: 2
-jobs:
-  build:
+# CircleCI 2.1 config file
+#
+# For more details check:
+# https://circleci.com/docs/2.0/configuration-reference/
+# https://circleci.com/docs/2.0/language-go/
+version: 2.1
+
+# Orbs are packages of config that you either import by name or configure inline
+# to simplify your config, share, and reuse config within and across projects.
+# https://circleci.com/docs/2.0/using-orbs/
+orbs:
+  dependency-manager: valimail/dependency-manager@0.4.6
+  # https://circleci.com/orbs/registry/orb/timakin/golangci-lint
+  # golangci-lint: valimail/golangci-lint@0.2.0
+
+# To avoid DockerHub rate limiting we need to auth with our Valimail DockerHub
+# user's API access token. If you add a new shared context, make sure
+# these environment variables are added to it with the credentials from 1Password.
+# https://app.circleci.com/settings/organization/github/ValiMail/contexts
+docker-auth: &docker-auth
+  auth:
+    username: $DOCKERHUB_USERNAME
+    password: $DOCKERHUB_PASSWORD
+
+# Executors define the environment in which the steps of a job will be run.
+# When you declare a job in CircleCI configuration, you define the type of
+# environment (e.g. docker, machine, macos, etc.) to run in, in addition to
+# any other parameters of that environment
+executors:
+  go-system:
     docker:
-      - image: circleci/golang:1.11.2
-    working_directory: /go/src/github.com/ValiMail/collections
+      - image: circleci/golang:latest
+        <<: *docker-auth
+
+jobs:
+  build-job:
+    resource_class: small
+    executor: go-system
     steps:
       - checkout
       - run:
@@ -16,5 +48,12 @@ jobs:
           name: Running tests
           command: GOOS=linux GOARCH=amd64 make build
       - run:
-          name: Report Coverage
-          command: bash <(curl -s https://codecov.io/bash)
+          name: Report coverage
+          command: |
+            GOOS=linux make report_coverage
+
+workflows:
+  build-deploy:
+    jobs:
+      - build-job:
+          context: valimail-saas-tokens

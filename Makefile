@@ -16,6 +16,10 @@ DIST_NAME=${APP_NAME}
 test: ## Run test suite with race detection and coverage/profiling
 	go test -race -coverprofile coverage.txt ./...
 
+report_coverage: test ## Report coverage
+	go get github.com/mattn/goveralls
+	${GOENV} goveralls -coverprofile=coverage.txt -service=circle-ci
+
 compile: ## Compile project for specified GOOS/GOARCH
 	GOOS=${GOOS} GOARCH=${GOARCH} go build -o "${DIST_NAME}" .
 

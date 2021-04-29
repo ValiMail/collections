@@ -42,8 +42,10 @@ jobs:
           name: Setting up Go workspace
           command: make prepare_ci
       - run:
-          name: Running lint
-          command: make lint -j 8
+          name: Run make lint
+          command: |
+            curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin
+            PATH="$(go env GOPATH)/bin:$PATH" GOOS=linux make lint
       - run:
           name: Running tests
           command: GOOS=linux GOARCH=amd64 make build

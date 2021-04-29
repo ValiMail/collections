@@ -48,48 +48,11 @@ fmt: ## Format code
 	gofmt -s -l -w $$(find . -name '*.go' -and -not -path './vendor/*')
 	goimports -w $$(find . -name '*.go' -and -not -path './vendor/*')
 
-lint_vet:
-	go vet -all -shadow ./...
-
-lint_golint:
-	golint -set_exit_status $$(go list ./...)
-
-lint_ineffassign:
-	ineffassign .
-
-lint_structcheck:
-	structcheck -e ./...
-
-lint_varcheck:
-	varcheck -e ./...
-
-lint_gocyclo:
-	gocyclo -over 10 $$(find . -name '*.go' -and -not -path './vendor/*')
-
-lint_dupl:
-	# Complex shenanigans here because I don't know how to set a Make variable _from within a task_,
-	# and shell variables don't survive from statement to statement (because sub-processes get their
-	# own environment, blah blah).
-	# tl;dr: `dupl` doesn't set the exit status when violations are found, so I need to check the
-	# output and set it myself,
-	export TMPFILE=$(shell mktemp /tmp/collections.dupl.XXXXXXX || exit 1); \
-	dupl -t 100 $$(find . -name '*.go' -and -not -path './cmd/*' -and -not -path './vendor/*' -and -not -name '*_test.go') 2>&1 | \
-		tee $$TMPFILE && \
-	if [ $$(($$(wc -l < $$TMPFILE) + 0)) -gt 2 ]; then exit 1; fi
-
-lint_lll:
-	export TMPFILE=$(shell mktemp /tmp/collections.lll.XXXXXXX || exit 1); \
-	lll --maxlength=100 --tabwidth=2 --goonly . 2>&1 | \
-		tee $$TMPFILE && \
-	if [ $$(($$(wc -l < $$TMPFILE) + 0)) -gt 0 ]; then exit 1; fi
-
-lint_unparam:
-	export TMPFILE=$(shell mktemp /tmp/collections.unparam.XXXXXXX || exit 1); \
-	unparam -algo rta ./... 2>&1 | \
-		tee $$TMPFILE && \
-	if [ $$(($$(wc -l < $$TMPFILE) + 0)) -gt 0 ]; then exit 1; fi
-
-lint: lint_vet lint_golint lint_ineffassign lint_structcheck lint_varcheck lint_gocyclo lint_dupl lint_lll lint_unparam ## Run linting tools (e.g. go vet and golint) against the project
+lint: clean ## Run all linters
+	$("GOENV: [${GOENV}]")
+	${GOENV} go vet -stdmethods ./...
+	${GOENV} go vet -vettool=$$(which nilness) ./...
+	${GOENV} golangci-lint run
 
 tag: ## Tag the git repo with the current VERSION, and push tags upstream
 	git tag v$(VERSION)

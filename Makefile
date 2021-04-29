@@ -54,6 +54,10 @@ lint: clean ## Run all linters
 	${GOENV} go vet -vettool=$$(which nilness) ./...
 	${GOENV} golangci-lint run
 
+clean: ## Clean up
+	${GOENV} go clean -cache -testcache ./...
+	rm -Rf bin
+
 tag: ## Tag the git repo with the current VERSION, and push tags upstream
 	git tag v$(VERSION)
 	git push --tags

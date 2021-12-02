@@ -50,10 +50,11 @@ jobs:
       - run:
           name: Running tests
           command: GOOS=linux GOARCH=amd64 make build
-      - run:
-          name: Report coverage
-          command: |
-            GOOS=linux make report_coverage
+#      TODO: report the coverage to the new code audit app
+#      - run:
+#          name: Report coverage
+#          command: |
+#            GOOS=linux make report_coverage
 
 workflows:
   build-deploy:

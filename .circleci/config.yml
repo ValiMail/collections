@@ -44,7 +44,8 @@ jobs:
       - run:
           name: Run make lint
           command: |
-            curl -sfL https://install.goreleaser.com/github.com/golangci/golangci-lint.sh | sh -s -- -b $(go env GOPATH)/bin
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.40.0
+            go env -w GOPRIVATE="github.com/ValiMail/*"
             PATH="$(go env GOPATH)/bin:$PATH" GOOS=linux make lint
       - run:
           name: Running tests

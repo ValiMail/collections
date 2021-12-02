@@ -9,7 +9,7 @@ import (
 )
 
 func TestStringSet(t *testing.T) {
-	goleak.VerifyNoLeaks(t)
+	goleak.VerifyNone(t)
 
 	Convey("NewStringSet(...)", t, func() {
 		stringSet := NewStringSet()

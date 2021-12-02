@@ -17,7 +17,7 @@ test: ## Run test suite with race detection and coverage/profiling
 	go test -race -coverprofile coverage.txt ./...
 
 report_coverage: test ## Report coverage
-	go get github.com/mattn/goveralls
+	go install github.com/mattn/goveralls@latest
 	${GOENV} goveralls -coverprofile=coverage.txt -service=circle-ci
 
 compile: ## Compile project for specified GOOS/GOARCH
@@ -25,24 +25,17 @@ compile: ## Compile project for specified GOOS/GOARCH
 
 build: test compile ## Run tests, then compile the project
 
-# Linting tools we might find useful later:
-# go get -u github.com/kisielk/errcheck # Would be nice, but very very very noisy, overlaps with gosec.
-# go get -u gitlab.com/opennota/check/cmd/aligncheck # Might be handy later, when we need to optimize.
-
-# Dev tools we might find useful later:
-# go get -u github.com/jgautheron/goconst/cmd/goconst # This tool seems... very broken.
-
 prepare_ci: ## Install CI-time tools
-	go get $$(cat tools.ci)
+	go install $$(cat tools.ci)
 
 update_ci: ## Update CI-time tools
-	go get -u $$(cat tools.ci)
+	go install -u $$(cat tools.ci)
 
 prepare_workstation: prepare_ci ## Install all (CI-time, and development-time) tools
-	go get $$(cat tools.dev)
+	go install $$(cat tools.dev)
 
 update_workstation: update_ci ## Update all (CI-time, and development-time) tools
-	go get -u $$(cat tools.dev)
+	go install -u $$(cat tools.dev)
 
 fmt: ## Format code
 	gofmt -s -l -w $$(find . -name '*.go' -and -not -path './vendor/*')

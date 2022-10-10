@@ -1,6 +1,6 @@
 module github.com/ValiMail/collections
 
-go 1.17
+go 1.18
 
 require (
 	github.com/smartystreets/goconvey v0.0.0-20181108003508-044398e4856c

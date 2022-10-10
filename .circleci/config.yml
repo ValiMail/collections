@@ -29,9 +29,8 @@ docker-auth: &docker-auth
 executors:
   go-system:
     docker:
-      - image: circleci/golang:latest
+      - image: cimg/go:1.18
         <<: *docker-auth
-
 jobs:
   build-job:
     resource_class: small
@@ -39,12 +38,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setting up Go workspace
-          command: make prepare_ci
+          name: Use ssh for ValiMail repositories
+          command: |
+            git config --global url."git@github.com:ValiMail".insteadOf "https://github.com/ValiMail"
+      - dependency-manager/install-go-dependencies
       - run:
           name: Run make lint
           command: |
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.40.0
+            echo "Go version: $(go version)"
+            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
             go env -w GOPRIVATE="github.com/ValiMail/*"
             PATH="$(go env GOPATH)/bin:$PATH" GOOS=linux make lint
       - run:

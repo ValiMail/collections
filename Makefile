@@ -25,7 +25,7 @@ compile: ## Compile project for specified GOOS/GOARCH
 
 build: test compile ## Run tests, then compile the project
 
-prepare_ci: ## Install CI-time tools
+prepare: ## Install CI-time tools
 	go install $$(cat tools.ci)
 
 update_ci: ## Update CI-time tools

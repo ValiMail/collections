@@ -10,8 +10,8 @@ version: 2.1
 # https://circleci.com/docs/2.0/using-orbs/
 orbs:
   dependency-manager: valimail/dependency-manager@0.4.6
-  # https://circleci.com/orbs/registry/orb/timakin/golangci-lint
-  # golangci-lint: valimail/golangci-lint@0.2.0
+  golangci-lint: valimail/golangci-lint@0.2.0
+  codecov: codecov/codecov@3.2.5
 
 # To avoid DockerHub rate limiting we need to auth with our Valimail DockerHub
 # user's API access token. If you add a new shared context, make sure
@@ -29,7 +29,7 @@ docker-auth: &docker-auth
 executors:
   go-system:
     docker:
-      - image: cimg/go:1.18
+      - image: cimg/go:1.20
         <<: *docker-auth
 jobs:
   build-job:
@@ -37,26 +37,12 @@ jobs:
     executor: go-system
     steps:
       - checkout
+      - dependency-manager/install-go-modules:
+          cache-version: v5
       - run:
-          name: Use ssh for ValiMail repositories
-          command: |
-            git config --global url."git@github.com:ValiMail".insteadOf "https://github.com/ValiMail"
-      - dependency-manager/install-go-dependencies
-      - run:
-          name: Run make lint
-          command: |
-            echo "Go version: $(go version)"
-            curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin
-            go env -w GOPRIVATE="github.com/ValiMail/*"
-            PATH="$(go env GOPATH)/bin:$PATH" GOOS=linux make lint
-      - run:
-          name: Running tests
-          command: GOOS=linux GOARCH=amd64 make build
-#      TODO: report the coverage to the new code audit app
-#      - run:
-#          name: Report coverage
-#          command: |
-#            GOOS=linux make report_coverage
+          name: Run tests and build
+          command: make build
+      - codecov/upload
 
 workflows:
   build-deploy:

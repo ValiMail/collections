@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/smartystreets/goconvey v1.8.1
-	go.uber.org/goleak v1.2.1
+	go.uber.org/goleak v1.3.0
 )
 
 require (
